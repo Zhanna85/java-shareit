@@ -7,19 +7,11 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-import static ru.practicum.shareit.utils.Message.EMAIL_CANNOT_BE_EMPTY;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
     private final UserStorage userStorage;
-/*    private void void dataValidator(User data) {
-        if (data.getEmail().isBlank()) {
-            log.error(EMAIL_CANNOT_BE_EMPTY.getMessage());
-            throw new ValidationException(EMAIL_CANNOT_BE_EMPTY.getMessage());
-        }
-    }*/
 
     @Override
     public User addModel(UserDto user) {
