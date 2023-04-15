@@ -64,7 +64,16 @@ public class ItemStorageImpl implements ItemStorage{
 
     @Override
     public Collection<ItemDto> searchItem(long userId, String text) {
-        return null;
+        userStorage.findById(userId);
+        if (text.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return items.values().stream()
+                .filter(item -> item.getAvailable() &&
+                        (item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                                item.getDescription().toLowerCase().contains(text.toLowerCase())))
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
