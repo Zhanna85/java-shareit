@@ -1,22 +1,24 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO Sprint add-controllers.
  */
+
+@AllArgsConstructor
+@Data
 public class Item {
 
     private long id; // уникальный идентификатор вещи;
-    @NotBlank
     private String name; // краткое название;
-    @NotBlank
     private String description; // развёрнутое описание;
-    @NotBlank
-    private boolean available; // статус о том, доступна или нет вещь для аренды;
-    @NotBlank
-    private User owner; // владелец вещи;
+    private Boolean available; // статус о том, доступна или нет вещь для аренды;
+    private long owner; // владелец вещи;
     private String request; // ссылка на соответствующий запрос (заполняется только если вещь создана по запросу).
 }

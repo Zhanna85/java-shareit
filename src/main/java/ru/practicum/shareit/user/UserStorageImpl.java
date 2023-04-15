@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.ValidationExceptionOnDuplicate;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -29,11 +29,14 @@ public class UserStorageImpl implements UserStorage {
         }
     }
 
-    private void validationDuplicate(UserDto user) {
-        if (users.containsValue(user)) {
-            log.error(DUPLICATE.getMessage());
-            throw new ValidationException(DUPLICATE.getMessage());
+    private void validationDuplicate(UserDto userDto) {
+        for (User user : users.values()) {
+            if (userDto.getEmail().equals(user.getEmail())) {
+                log.error(DUPLICATE.getMessage());
+                throw new ValidationExceptionOnDuplicate(DUPLICATE.getMessage());
+            }
         }
+
     }
 
     @Override
@@ -50,7 +53,7 @@ public class UserStorageImpl implements UserStorage {
     public User update(long id, UserDto user) {
         validationContain(id);
         User userUpdate = users.get(id);
-        if (user.getEmail() != null && !userUpdate.equals(user)) {
+        if (user.getEmail() != null && !userUpdate.getEmail().equals(user.getEmail())) {
             validationDuplicate(user);
             userUpdate.setEmail(user.getEmail());
         }
