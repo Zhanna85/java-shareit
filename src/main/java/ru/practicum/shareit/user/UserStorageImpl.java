@@ -23,7 +23,7 @@ public class UserStorageImpl implements UserStorage {
     private long id = 0L;
 
     private void validationContain(long id) {
-        if(!users.containsKey(id)) {
+        if (!users.containsKey(id)) {
             log.error(MODEL_NOT_FOUND.getMessage() + id);
             throw new NotFoundException(MODEL_NOT_FOUND.getMessage() + id);
         }

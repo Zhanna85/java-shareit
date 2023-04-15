@@ -10,7 +10,7 @@ import java.util.Collection;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
 

@@ -19,7 +19,7 @@ import static ru.practicum.shareit.utils.Message.NAME_MAY_NOT_CONTAIN_SPACES;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ItemStorageImpl implements ItemStorage{
+public class ItemStorageImpl implements ItemStorage {
 
     private final UserStorage userStorage;
     private final Map<Long, Item> items = new HashMap<>();
@@ -34,14 +34,14 @@ public class ItemStorageImpl implements ItemStorage{
     }
 
     private void validationContainItem(long id) {
-        if(!items.containsKey(id)) {
+        if (!items.containsKey(id)) {
             log.error(MODEL_NOT_FOUND.getMessage() + id);
             throw new NotFoundException(MODEL_NOT_FOUND.getMessage() + id);
         }
     }
 
     private void dataValidator(String name) {
-        if (name.isEmpty()){
+        if (name.isEmpty()) {
             log.error(NAME_MAY_NOT_CONTAIN_SPACES.getMessage());
             throw new ValidationException(NAME_MAY_NOT_CONTAIN_SPACES.getMessage());
         }
