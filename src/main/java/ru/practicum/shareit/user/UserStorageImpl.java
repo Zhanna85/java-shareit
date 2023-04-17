@@ -8,11 +8,12 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.user.mapper.UserMapper.toUserDto;
 import static ru.practicum.shareit.utils.Message.*;
 
 @Component
@@ -40,17 +41,17 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User add(UserDto userDto) {
+    public UserDto add(UserDto userDto) {
         validationDuplicate(userDto);
         id++;
         User user = UserMapper.toUser(id, userDto);
         users.put(id, user);
         log.info(ADD_MODEL.getMessage(), user);
-        return user;
+        return toUserDto(user);
     }
 
     @Override
-    public User update(long id, UserDto user) {
+    public UserDto update(long id, UserDto user) {
         validationContain(id);
         User userUpdate = users.get(id);
         if (user.getEmail() != null && !userUpdate.getEmail().equals(user.getEmail())) {
@@ -61,18 +62,20 @@ public class UserStorageImpl implements UserStorage {
             userUpdate.setName(user.getName());
         }
         users.put(id, userUpdate);
-        return userUpdate;
+        return toUserDto(userUpdate);
     }
 
     @Override
-    public User findById(long id) {
+    public UserDto findById(long id) {
         validationContain(id);
-        return users.get(id);
+        return toUserDto(users.get(id));
     }
 
     @Override
-    public List<User> getAll() {
-        return new ArrayList<>(users.values());
+    public List<UserDto> getAll() {
+        return users.values().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override

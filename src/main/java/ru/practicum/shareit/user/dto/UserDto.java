@@ -11,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserDto {
+
+    private long id;
     @NotBlank
     private String name; // имя или логин пользователя;
     @NotBlank @Email @EqualsAndHashCode.Include

@@ -14,22 +14,22 @@ public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public User addModel(UserDto user) {
+    public UserDto addModel(UserDto user) {
         return userStorage.add(user);
     }
 
     @Override
-    public User updateModel(long id, UserDto user) {
+    public UserDto updateModel(long id, UserDto user) {
         return userStorage.update(id, user);
     }
 
     @Override
-    public User findModelById(long id) {
+    public UserDto findModelById(long id) {
         return userStorage.findById(id);
     }
 
     @Override
-    public List<User> getAllModels() {
+    public List<UserDto> getAllModels() {
         return userStorage.getAll();
     }
 
