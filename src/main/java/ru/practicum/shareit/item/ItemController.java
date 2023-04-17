@@ -44,7 +44,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public Collection<ItemDto> search(@RequestHeader("X-Sharer-User-Id") long userId,
-                                      @RequestParam(value = "text", required = true) String text) {
+                                      @RequestParam String text) {
         log.info(SEARCH.getMessage());
         return itemService.search(userId,text);
     }

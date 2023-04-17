@@ -6,7 +6,6 @@ public enum Message {
     DELETE_MODEL("deleting the model with id {}"),
     REQUEST_ALL("Request all models"),
     REQUEST_BY_ID("model request by id {}"),
-    EMAIL_CANNOT_BE_EMPTY("Email cannot be empty and must contain the \"@\" character"),
     NAME_MAY_NOT_CONTAIN_SPACES("Name may not be empty or contain spaces"),
     DUPLICATE("the model already exists"),
     MODEL_NOT_FOUND("model was not found by the passed ID: "),

@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.utils.Message.*;
-import static ru.practicum.shareit.utils.Message.NAME_MAY_NOT_CONTAIN_SPACES;
 
 @Component
 @RequiredArgsConstructor
