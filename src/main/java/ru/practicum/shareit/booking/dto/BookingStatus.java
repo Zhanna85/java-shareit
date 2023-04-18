@@ -1,7 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-import java.util.Arrays;
-
 public enum BookingStatus {
     WAITING("новое бронирование, ожидает одобрения"),
     APPROVED("бронирование подтверждено владельцем"),
