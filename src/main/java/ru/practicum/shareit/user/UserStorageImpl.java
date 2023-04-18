@@ -8,9 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.user.mapper.UserMapper.toUserDto;
@@ -21,6 +19,7 @@ import static ru.practicum.shareit.utils.Message.*;
 public class UserStorageImpl implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
+    private final Set<String> emails = new HashSet<>();
     private long id = 0L;
 
     private void validationContain(long id) {
@@ -31,13 +30,10 @@ public class UserStorageImpl implements UserStorage {
     }
 
     private void validationDuplicate(UserDto userDto) {
-        for (User user : users.values()) {
-            if (userDto.getEmail().equals(user.getEmail())) {
-                log.error(DUPLICATE.getMessage());
-                throw new ValidationExceptionOnDuplicate(DUPLICATE.getMessage());
-            }
+        if (emails.contains(userDto.getEmail())) {
+            log.error(DUPLICATE.getMessage());
+            throw new ValidationExceptionOnDuplicate(DUPLICATE.getMessage());
         }
-
     }
 
     @Override
@@ -46,6 +42,7 @@ public class UserStorageImpl implements UserStorage {
         id++;
         User user = UserMapper.toUser(id, userDto);
         users.put(id, user);
+        emails.add(userDto.getEmail());
         log.info(ADD_MODEL.getMessage(), user);
         return toUserDto(user);
     }
@@ -56,7 +53,9 @@ public class UserStorageImpl implements UserStorage {
         User userUpdate = users.get(id);
         if (user.getEmail() != null && !userUpdate.getEmail().equals(user.getEmail())) {
             validationDuplicate(user);
+            emails.remove(userUpdate.getEmail());
             userUpdate.setEmail(user.getEmail());
+            emails.add(user.getEmail());
         }
         if (user.getName() != null) {
             userUpdate.setName(user.getName());
@@ -81,6 +80,7 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public void deleteById(long id) {
         validationContain(id);
+        emails.remove(users.get(id).getEmail());
         users.remove(id);
     }
 }
