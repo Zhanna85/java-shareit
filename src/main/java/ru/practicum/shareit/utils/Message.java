@@ -9,7 +9,7 @@ public enum Message {
     NAME_MAY_NOT_CONTAIN_SPACES("Name may not be empty or contain spaces"),
     DUPLICATE("the model already exists"),
     MODEL_NOT_FOUND("model was not found by the passed ID: "),
-    INVALID_USER_ID("invalid user ID {}"),
+    INVALID_USER_ID("invalid user ID "),
     SEARCH("search");
 
     private final String message;

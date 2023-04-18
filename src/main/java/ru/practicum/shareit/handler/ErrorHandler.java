@@ -18,21 +18,21 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException validationException) {
-        log.error("Код ошибки: {}", HttpStatus.BAD_REQUEST);
+        log.error("Код ошибки: {}, {}", HttpStatus.BAD_REQUEST, validationException.getMessage());
         return Map.of("error", validationException.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final NotFoundException notFoundException) {
-        log.error("Код ошибки: {}", HttpStatus.NOT_FOUND);
+        log.error("Код ошибки: {}, {}", HttpStatus.NOT_FOUND, notFoundException.getMessage());
         return Map.of("error", notFoundException.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleValidationExceptionOnDuplicate(final ValidationExceptionOnDuplicate exception) {
-        log.error("Код ошибки: {}", HttpStatus.CONFLICT);
+        log.error("Код ошибки: {}, {}", HttpStatus.NOT_FOUND, exception.getMessage());
         return Map.of("error", exception.getMessage());
     }
 }

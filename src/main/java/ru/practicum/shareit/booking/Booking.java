@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import ru.practicum.shareit.booking.dto.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -15,10 +16,5 @@ public class Booking {
     private LocalDateTime end; // дата и время конца бронирования;
     private Item item; // вещь, которую пользователь бронирует;
     private User booker; // пользователь, который осуществляет бронирование;
-    private String status; // статус бронирования.
-    /* Может принимать одно из следующих значений:
-     WAITING — новое бронирование, ожидает одобрения,
-     APPROVED — бронирование подтверждено владельцем,
-     REJECTED — бронирование отклонено владельцем,
-     CANCELED — бронирование отменено создателем.*/
+    private BookingStatus status; // статус бронирования.
 }
