@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
+import java.util.Arrays;
+
 public enum BookingStatus {
     WAITING("новое бронирование, ожидает одобрения"),
     APPROVED("бронирование подтверждено владельцем"),
@@ -14,5 +16,9 @@ public enum BookingStatus {
 
     public String getMessage() {
         return message;
+    }
+
+    public static BookingStatus valueOfIgnoreCase(String name) {
+        return BookingStatus.valueOf(name.toUpperCase());
     }
 }

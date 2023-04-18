@@ -22,6 +22,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     private final UserStorage userStorage;
     private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Set<Long>> listItemsByIdUser = new HashMap<>();
     private long countId = 0L;
 
     private void validation(long userId, long itemId) {
@@ -46,11 +47,17 @@ public class ItemStorageImpl implements ItemStorage {
         }
     }
 
+    private void addItemToList(long id, Item item) {
+        Set<Long> itemList = listItemsByIdUser.getOrDefault(id, new HashSet<>());
+        itemList.add(item.getId());
+        listItemsByIdUser.put(id, itemList);
+    }
+
     @Override
     public Collection<ItemDto> getAllItemsByIdUser(long userId) {
         userStorage.findById(userId);
-        return items.values().stream()
-                .filter(item -> Objects.equals(item.getOwner(), userId))
+        return listItemsByIdUser.get(userId).stream()
+                .map(items::get)
                 .map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -82,6 +89,7 @@ public class ItemStorageImpl implements ItemStorage {
         countId++;
         Item item = ItemMapper.toItem(countId, userId, itemDto);
         items.put(countId, item);
+        addItemToList(userId, item);
         return ItemMapper.toItemDto(item);
     }
 
@@ -94,6 +102,7 @@ public class ItemStorageImpl implements ItemStorage {
         String name = itemDto.getName();
         String description = itemDto.getDescription();
         Boolean available = itemDto.getAvailable();
+
         if (description != null) {
             item.setDescription(description);
         }
@@ -104,6 +113,8 @@ public class ItemStorageImpl implements ItemStorage {
         if (available != null) {
             item.setAvailable(available);
         }
+
+        addItemToList(userId, item);
         items.put(itemId, item);
         return ItemMapper.toItemDto(item);
     }
