@@ -10,6 +10,12 @@ public enum Message {
     DUPLICATE("the model already exists"),
     MODEL_NOT_FOUND("model was not found by the passed ID: "),
     INVALID_USER_ID("invalid user ID "),
+    NOT_AVAILABLE("Item is not available for booking"),
+    INVALID_DATE("Incorrect start or end date. " +
+            "The end date cannot be equal to the start date and cannot be before the start date."),
+    INVALID_USER_REQUEST_APPROVED("Approved or rejection of a booking request" +
+            " can only be performed by the owner of the item."),
+    UNKNOWN_STATE("Unknown state: UNSUPPORTED_STATUS"),
     SEARCH("search");
 
     private final String message;

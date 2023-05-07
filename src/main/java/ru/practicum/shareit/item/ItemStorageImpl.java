@@ -27,10 +27,10 @@ public class ItemStorageImpl implements ItemStorage {
 
     private void validation(long userId, long itemId) {
         Item item = items.get(itemId);
-        if (item.getOwner() != userId) {
+       /* if (item.getOwner() != userId) {
             log.error(INVALID_USER_ID.getMessage(), userId);
             throw new NotFoundException(INVALID_USER_ID.getMessage() + userId);
-        }
+        }*/
     }
 
     private void validationContainItem(long id) {
@@ -84,13 +84,14 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public ItemDto createItem(long userId, ItemDto itemDto) {
-        userStorage.findById(userId);
+        /*userStorage.findById(userId);
         dataValidator(itemDto.getName());
         countId++;
         Item item = ItemMapper.toItem(countId, userId, itemDto);
         items.put(countId, item);
         addItemToList(userId, item);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(item);*/
+        return null;
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ItemRequest {
 
-    private long id; // уникальный идентификатор запроса;
+    private Long id; // уникальный идентификатор запроса;
     private String description; // текст запроса, содержащий описание требуемой вещи;
     private User requester; // пользователь, создавший запрос;
     private LocalDateTime created; // дата и время создания запроса.

@@ -1,20 +1,46 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
+import ru.practicum.shareit.user.model.User;
+
+import javax.persistence.*;
 
 /**
  * TODO Sprint add-controllers.
  */
 
-@AllArgsConstructor
-@Data
+@Entity
+@Table(name = "items")
+@ToString @Getter @Setter
+@EqualsAndHashCode
+@DynamicUpdate
 public class Item {
 
-    private long id; // уникальный идентификатор вещи;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(
+            name = "id",
+            updatable = false
+    )
+    private Long id; // уникальный идентификатор вещи;
+
+    @Column(nullable = false)
     private String name; // краткое название;
+
+    @Column(nullable = false)
     private String description; // развёрнутое описание;
+
+    @Column(
+            name = "is_available",
+            nullable = false
+    )
     private Boolean available; // статус о том, доступна или нет вещь для аренды;
-    private long owner; // владелец вещи;
-    private String request; // ссылка на соответствующий запрос (заполняется только если вещь создана по запросу).
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner; // владелец вещи;
+
+    private Long request; // ссылка на соответствующий запрос (заполняется только если вещь создана по запросу).
 }

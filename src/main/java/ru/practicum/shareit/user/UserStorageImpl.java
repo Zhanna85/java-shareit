@@ -40,7 +40,7 @@ public class UserStorageImpl implements UserStorage {
     public UserDto add(UserDto userDto) {
         validationDuplicate(userDto);
         id++;
-        User user = UserMapper.toUser(id, userDto);
+        User user = UserMapper.toUser(/*id,*/ userDto);
         users.put(id, user);
         emails.add(userDto.getEmail());
         log.info(ADD_MODEL.getMessage(), user);
