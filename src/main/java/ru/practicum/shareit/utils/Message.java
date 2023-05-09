@@ -16,6 +16,9 @@ public enum Message {
     INVALID_USER_REQUEST_APPROVED("Approved or rejection of a booking request" +
             " can only be performed by the owner of the item."),
     UNKNOWN_STATE("Unknown state: UNSUPPORTED_STATUS"),
+    BEEN_APPROVED("the booking has already been approved"),
+    IS_OWNER_ITEM("the user is the owner of the item. the owner cannot book his item"),
+    NOT_ADD_COMMENT("The booker can add a comment after the end of the lease term"),
     SEARCH("search");
 
     private final String message;

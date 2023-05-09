@@ -6,7 +6,8 @@ public enum BookingState {
     PAST,
     FUTURE,
     WAITING,
-    REJECTED;
+    REJECTED,
+    UNSUPPORTED_STATUS;
 
     public static BookingState valueOfIgnoreCase(String name) {
         return BookingState.valueOf(name.toUpperCase());

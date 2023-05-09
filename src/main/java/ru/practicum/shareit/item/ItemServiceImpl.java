@@ -4,28 +4,29 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.CommentMapper;
+import ru.practicum.shareit.item.dto.ItemInfo;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.mapper.CommentMapper.mapToCommentDtoResponse;
 import static ru.practicum.shareit.item.mapper.CommentMapper.mapToNewComment;
-import static ru.practicum.shareit.item.mapper.ItemMapper.toItemDto;
-import static ru.practicum.shareit.item.mapper.ItemMapper.toNewItem;
-import static ru.practicum.shareit.utils.Message.MODEL_NOT_FOUND;
-import static ru.practicum.shareit.utils.Message.NAME_MAY_NOT_CONTAIN_SPACES;
+import static ru.practicum.shareit.item.mapper.ItemMapper.*;
+import static ru.practicum.shareit.utils.Message.*;
 
 @Service
 @Slf4j
@@ -60,12 +61,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(long userId, long itemId) {
+    public ItemInfo getItem(long userId, long itemId) {
        /* return itemStorage.getItemByID(userId, itemId);*/
         validUser(userId);
-        return itemRepository.findById(itemId)
-                .map(ItemMapper ::toItemDto)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
+
+        Booking lastBooking = null;
+        Booking nextBooking = null;
+
+        if (item.getOwner().getId() == userId) {
+            LocalDateTime nowDate = LocalDateTime.now();
+            lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemId, nowDate,
+                    BookingStatus.APPROVED);
+            nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemId, nowDate,
+                    BookingStatus.APPROVED);
+        }
+
+        return toGetItem(item, lastBooking, nextBooking);
     }
 
     @Override
@@ -86,6 +99,7 @@ public class ItemServiceImpl implements ItemService {
         User user = validUser(userId);
         dataValidator(itemDto.getName());
         Item item = itemRepository.save(toNewItem(user, itemDto));
+        log.info(ADD_MODEL.getMessage(), item);
         return toItemDto(item);
     }
 
@@ -116,8 +130,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDtoResponse saveComment(Long userId, Long itemId, CommentDto commentDto) {
         User user = validUser(userId);
-        Item item = bookingRepository.findItemByIdAndBookerIdAndStatusAPPROVEDAndEndBefore(itemId, userId,
-                commentDto.getCreated()).orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
+        Item item = bookingRepository.findItemByIdAndBookerIdAndStatusAndEndBefore(itemId, userId, BookingStatus.APPROVED,
+                commentDto.getCreated()).orElseThrow(() -> new ValidationException(NOT_ADD_COMMENT.getMessage()));
         Comment comment = commentRepository.save(mapToNewComment(user, item, commentDto));
 
         return mapToCommentDtoResponse(comment);

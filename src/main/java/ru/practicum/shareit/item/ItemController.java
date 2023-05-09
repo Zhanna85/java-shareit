@@ -7,6 +7,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemInfo;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -39,8 +40,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                       @PathVariable Long itemId) {
+    public ItemInfo getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                            @PathVariable Long itemId) {
         validateUserId(userId);
         log.info(REQUEST_BY_ID.getMessage(), itemId);
         return itemService.getItem(userId, itemId);

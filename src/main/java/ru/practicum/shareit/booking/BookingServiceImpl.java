@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingState.valueOfIgnoreCase;
@@ -41,45 +43,58 @@ public class BookingServiceImpl implements BookingService {
                  .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
     }
 
-    private void validStartEndEndDate(BookingDto bookingDto) {
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+    private void validStartEndEndDate(BookingDtoRequest bookingDtoRequest) {
+        if (bookingDtoRequest.getEnd().isBefore(bookingDtoRequest.getStart())) {
             throw new ValidationException(INVALID_DATE.getMessage());
         }
-        if (bookingDto.getEnd().isEqual(bookingDto.getStart())) {
+        if (bookingDtoRequest.getEnd().isEqual(bookingDtoRequest.getStart())) {
             throw new ValidationException(INVALID_DATE.getMessage());
         }
+        List<Booking> bookingList = bookingRepository.getBookingDate(bookingDtoRequest.getItemId(),
+                bookingDtoRequest.getStart(), bookingDtoRequest.getEnd());
+        if (bookingList.size() > 0) {
+            throw new ValidationException(INVALID_DATE.getMessage());
+        }
+
     }
 
     @Override
-    public BookingDto addNewBooking(Long userId, BookingDto bookingDto) {
+    public BookingDto addNewBooking(Long userId, BookingDtoRequest bookingDtoRequest) {
         User user = validUserById(userId);
-        Item item = validItemById(bookingDto.getItemId());
+        Item item = validItemById(bookingDtoRequest.getItemId());
+        if (Objects.equals(item.getOwner().getId(), userId)) {
+            throw new NotFoundException(IS_OWNER_ITEM.getMessage());
+        }
         if (!item.getAvailable()) {
             throw new ValidationException(NOT_AVAILABLE.getMessage());
         }
-        validStartEndEndDate(bookingDto);
-        Booking booking = bookingRepository.save(BookingMapper.mapToBooking(user, item, bookingDto));
+        validStartEndEndDate(bookingDtoRequest);
+        Booking booking = bookingRepository.save(BookingMapper.mapToBooking(user, item, bookingDtoRequest));
         log.info(ADD_MODEL.getMessage(), booking);
         return BookingMapper.mapToBookingDto(booking);
     }
 
     @Override
     public BookingDto updateBooking(Long userId, Long bookingId, Boolean approved) {
-        bookingRepository.findByIdAndItemOwnerId(bookingId, userId)
-                .orElseThrow(() -> new ValidationException(INVALID_USER_REQUEST_APPROVED.getMessage()));
-        BookingStatus status;
-        if (approved) {
-            status = APPROVED;
-        } else {
-            status = REJECTED;
+        Booking booking = bookingRepository.findByIdAndItemOwnerId(bookingId, userId)
+                .orElseThrow(() -> new NotFoundException(INVALID_USER_REQUEST_APPROVED.getMessage()));
+
+        if (approved && booking.getStatus() == APPROVED) {
+            throw new ValidationException(BEEN_APPROVED.getMessage());
+        }
+        if (approved && booking.getStatus() != APPROVED) {
+            booking.setStatus(APPROVED);
+        }
+        if (!approved && booking.getStatus() != REJECTED) {
+            booking.setStatus(REJECTED);
         }
 
-        return BookingMapper.mapToBookingDto(bookingRepository.saveById(status, bookingId));
+        return BookingMapper.mapToBookingDto(bookingRepository.save(booking));
     }
 
     @Override
     public BookingDto getBookingByID(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findByIdAndBookerIdOrItemOwnerId(userId, bookingId)
+        Booking booking = bookingRepository.findByIdAndBookerIdOrItemOwnerId(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + bookingId));
         return BookingMapper.mapToBookingDto(booking);
     }
@@ -105,7 +120,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findByBookerIdAndCurrentMomentBetweenStartAndEnd(userId, currentMoment);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, status);
+                bookingList = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
                 bookingList = bookingRepository.findByBookerIdAndStatusRejected(userId);
@@ -139,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findByItemOwnerIdAndCurrentMomentBetweenStartAndEnd(userId, currentMoment);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, status);
+                bookingList = bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
                 bookingList = bookingRepository.findByItemOwnerIdAndStatusRejected(userId);

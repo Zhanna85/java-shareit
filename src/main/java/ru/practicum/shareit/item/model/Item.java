@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -42,5 +43,8 @@ public class Item {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner; // владелец вещи;
 
-    private Long request; // ссылка на соответствующий запрос (заполняется только если вещь создана по запросу).
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinColumn(name = "request_id")
+    private ItemRequest request; // ссылка на соответствующий запрос (заполняется только если вещь создана по запросу).
 }

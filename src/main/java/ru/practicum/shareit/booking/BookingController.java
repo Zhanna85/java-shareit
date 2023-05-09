@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.exception.NotFoundException;
 
 import javax.validation.Valid;
@@ -31,10 +32,10 @@ public class BookingController {
 
     @PostMapping
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                             @Valid @RequestBody BookingDto bookingDto) {
+                             @Valid @RequestBody BookingDtoRequest bookingDtoRequest) {
         validateUserId(userId);
-        log.info(ADD_MODEL.getMessage(), bookingDto);
-        return bookingService.addNewBooking(userId, bookingDto);
+        log.info(ADD_MODEL.getMessage(), bookingDtoRequest);
+        return bookingService.addNewBooking(userId, bookingDtoRequest);
     }
 
     @PatchMapping("/{bookingId}")

@@ -10,10 +10,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     //User saveUser(User user);
 
-    User saveUserById(long id, User user);
+    /*User saveUserById(long id, User user);*/
 
-    @Query("SELECT u FROM User WHERE u.email = ?1")
-    Optional<User> findUserByEmail(String email);
+    /*@Query("SELECT u FROM User WHERE u.email = ?1")*/
+    Optional<User> findByEmail(String email);
 
     //User findUserById(long id);
 

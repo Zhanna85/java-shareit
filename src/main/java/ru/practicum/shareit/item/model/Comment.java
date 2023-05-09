@@ -31,9 +31,9 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false, updatable = false)
     private User author; // автор комментария;
 
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime created; // дата создания комментария.
 }

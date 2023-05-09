@@ -2,7 +2,10 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemInfo;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -26,18 +29,34 @@ public class ItemMapper {
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(user);
-        item.setRequest(itemDto.getRequest());
 
         return item;
     }
 
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getRequest()
-        );
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        return itemDto;
+    }
+
+    public static ItemInfo toGetItem(Item item, Booking lastBooking, Booking nextBooking) {
+        ItemInfo itemInfo = new ItemInfo();
+        itemInfo.setId(item.getId());
+        itemInfo.setName(item.getName());
+        itemInfo.setDescription(item.getDescription());
+        itemInfo.setAvailable(item.getAvailable());
+        if (lastBooking != null) {
+            itemInfo.setLastBooking(new BookingDtoForItem(lastBooking.getId(),
+                    lastBooking.getStart(), lastBooking.getEnd(), lastBooking.getBooker().getId()));
+        }
+        if (nextBooking != null) {
+            itemInfo.setNextBooking(new BookingDtoForItem(nextBooking.getId(), nextBooking.getStart(),
+                    nextBooking.getEnd(), nextBooking.getBooker().getId()));
+        }
+
+        return itemInfo;
     }
 }

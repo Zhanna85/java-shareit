@@ -12,15 +12,15 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdAndItemOwnerId(Long id, Long ownerId);
 
-    @Query("update Booking b set b.status = ?1 where b.id = ?2")
-    Booking saveById(BookingStatus status, Long id);
+/*    @Query("update Booking b set b.status = ?1 where b.id = ?2")
+    Booking saveById(BookingStatus status, Long id);*/
 
-    @Query("Select b " +
+    @Query("Select distinct b " +
             "From Booking AS b " +
             "join b.item AS i " +
             "Where b.id = ?1" +
-            " and b.booker.id = ?2 or i.owner.id = ?2")
-    Optional<Booking> findByIdAndBookerIdOrItemOwnerId(Long id, Long userId);
+            " and (b.booker.id = ?2 or i.owner.id = ?2)")
+    Optional<Booking> findByIdAndBookerIdOrItemOwnerId(Long id, Long bookerId);
 
     List<Booking> findByBookerIdOrderByStartDesc(Long bookerId);
 
@@ -37,7 +37,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start DESC")
     List<Booking> findByBookerIdAndCurrentMomentBetweenStartAndEnd(Long bookerId, LocalDateTime currentMoment);
 
-    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingState status);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
 
     @Query("Select b " +
             "From Booking AS b " +
@@ -62,7 +62,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start DESC")
     List<Booking> findByItemOwnerIdAndCurrentMomentBetweenStartAndEnd(Long ownerId, LocalDateTime currentMoment);
 
-    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingState status);
+    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
 
     @Query("Select b " +
             "From Booking AS b " +
@@ -72,5 +72,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start DESC")
     List<Booking> findByItemOwnerIdAndStatusRejected(Long ownerId);
 
-    Optional<Item> findItemByIdAndBookerIdAndStatusAPPROVEDAndEndBefore(Long id, Long bookerId, LocalDateTime createdDate);
+    Optional<Item> findItemByIdAndBookerIdAndStatusAndEndBefore(Long id, Long bookerId, BookingStatus status,
+                                                                          LocalDateTime createdDate);
+
+    @Query("Select b " +
+            "From Booking AS b " +
+            /*"join b.item AS i " +*/
+            "Where b.item.id = ?1 " +
+            /*"and b.status not in ('REJECTED', 'CANCELED') " +*/
+            "and (b.start >= ?2 and b.end <= ?3)"
+    )
+    List<Booking> getBookingDate(Long Id, LocalDateTime startDate, LocalDateTime endDate);
+
+    Booking findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(Long itemId, LocalDateTime nowDate,
+                                                                     BookingStatus status);
+
+    Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime nowDate,
+                                                                   BookingStatus status);
 }
