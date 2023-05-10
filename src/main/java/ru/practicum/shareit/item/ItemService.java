@@ -9,7 +9,7 @@ import java.util.Collection;
 
 public interface ItemService {
 
-    Collection<ItemDto> getAllItemsByIdUser(long userId);
+    Collection<ItemInfo> getAllItemsByIdUser(long userId);
 
     ItemInfo getItem(long userId, long itemId);
 

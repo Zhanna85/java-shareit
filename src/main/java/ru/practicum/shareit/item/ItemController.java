@@ -33,7 +33,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllItemsByIdUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemInfo> getAllItemsByIdUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
         validateUserId(userId);
         log.info(REQUEST_ALL.getMessage());
         return itemService.getAllItemsByIdUser(userId);
@@ -78,6 +78,8 @@ public class ItemController {
                                          @Valid @RequestBody CommentDto commentDto) {
         validateUserId(userId);
         log.info(ADD_MODEL.getMessage(), commentDto);
-        return itemService.saveComment(userId, itemId, commentDto);
+        CommentDtoResponse commentDtoResponse = itemService.saveComment(userId, itemId, commentDto);
+        log.info(ADD_MODEL.getMessage(), commentDtoResponse);
+        return commentDtoResponse;
     }
 }

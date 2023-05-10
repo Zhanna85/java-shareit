@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
@@ -12,15 +13,17 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemInfo;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.mapper.CommentMapper.mapToCommentDtoResponse;
@@ -33,7 +36,6 @@ import static ru.practicum.shareit.utils.Message.*;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    //private final ItemStorage itemStorage;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
@@ -52,38 +54,39 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> getAllItemsByIdUser(long userId) {
+    public Collection<ItemInfo> getAllItemsByIdUser(long userId) {
         validUser(userId);
-       /* return itemStorage.getAllItemsByIdUser(userId);*/
-        return itemRepository.findByOwnerId(userId).stream()
-                .map(ItemMapper ::toItemDto)
+        List<Item> itemList = itemRepository.findByOwnerId(userId);
+        List<Booking> bookingList = bookingRepository.findByItemOwnerIdAndStatusOrderByStartAsc(userId,
+                BookingStatus.APPROVED);
+
+        return itemList.stream()
+                .map(item -> ItemMapper.toGetItemWithBooking(item, bookingList, new ArrayList<>()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public ItemInfo getItem(long userId, long itemId) {
-       /* return itemStorage.getItemByID(userId, itemId);*/
         validUser(userId);
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
-
-        Booking lastBooking = null;
-        Booking nextBooking = null;
+        List<Booking> bookingList = new ArrayList<>();
 
         if (item.getOwner().getId() == userId) {
-            LocalDateTime nowDate = LocalDateTime.now();
-            lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemId, nowDate,
+            bookingList = bookingRepository.findByItemIdAndStatusOrderByStartAsc(itemId,
                     BookingStatus.APPROVED);
-            nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemId, nowDate,
-                    BookingStatus.APPROVED);
+
         }
 
-        return toGetItem(item, lastBooking, nextBooking);
+        List<CommentDtoResponse> comments = commentRepository.findByItemIdOrderByCreatedAsc(itemId).stream()
+                .map(CommentMapper::mapToCommentDtoResponse)
+                .collect(Collectors.toList());
+
+        return toGetItemWithBooking(item, bookingList, comments);
     }
 
     @Override
     public Collection<ItemDto> search(long userId, String text) {
-        /*return itemStorage.searchItem(userId, text);*/
         validUser(userId);
         if (text.isEmpty()) {
             return Collections.emptyList();
@@ -94,6 +97,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
         User user = validUser(userId);
@@ -103,6 +107,7 @@ public class ItemServiceImpl implements ItemService {
         return toItemDto(item);
     }
 
+    @Transactional
     @Override
     public ItemDto update(long userId, long itemId, ItemDto itemDto) {
         User user = validUser(userId);
@@ -124,14 +129,20 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return toItemDto(itemRepository.save(item));
-        /*return itemStorage.updateItem(userId, itemId, itemDto);*/
     }
 
+    @Transactional
     @Override
     public CommentDtoResponse saveComment(Long userId, Long itemId, CommentDto commentDto) {
         User user = validUser(userId);
-        Item item = bookingRepository.findItemByIdAndBookerIdAndStatusAndEndBefore(itemId, userId, BookingStatus.APPROVED,
-                commentDto.getCreated()).orElseThrow(() -> new ValidationException(NOT_ADD_COMMENT.getMessage()));
+        List<Booking> bookingList = bookingRepository.findByItemIdAndBookerIdAndStatusAndEndBefore(itemId, userId,
+                BookingStatus.APPROVED, commentDto.getCreated());
+        if (bookingList.isEmpty()) {
+            throw new ValidationException(NOT_ADD_COMMENT.getMessage());
+        }
+        Item item = itemRepository.findById(itemId).stream().findAny()
+                .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
+
         Comment comment = commentRepository.save(mapToNewComment(user, item, commentDto));
 
         return mapToCommentDtoResponse(comment);

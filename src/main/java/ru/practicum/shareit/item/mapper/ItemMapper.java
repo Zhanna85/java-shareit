@@ -4,24 +4,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemInfo;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+import java.util.*;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
-
-    /*public static Item toItem(long id, long userId, ItemDto itemDto) {
-        return new Item(
-                id,
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                userId,
-                itemDto.getRequest()
-        );
-    }*/
 
     public static Item toNewItem(User user, ItemDto itemDto) {
         Item item = new Item();
@@ -42,21 +35,39 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static ItemInfo toGetItem(Item item, Booking lastBooking, Booking nextBooking) {
+    public static ItemInfo toGetItemWithBooking(Item item, List<Booking> bookingList, List<CommentDtoResponse> commentList) {
         ItemInfo itemInfo = new ItemInfo();
         itemInfo.setId(item.getId());
         itemInfo.setName(item.getName());
         itemInfo.setDescription(item.getDescription());
         itemInfo.setAvailable(item.getAvailable());
-        if (lastBooking != null) {
-            itemInfo.setLastBooking(new BookingDtoForItem(lastBooking.getId(),
-                    lastBooking.getStart(), lastBooking.getEnd(), lastBooking.getBooker().getId()));
-        }
-        if (nextBooking != null) {
-            itemInfo.setNextBooking(new BookingDtoForItem(nextBooking.getId(), nextBooking.getStart(),
-                    nextBooking.getEnd(), nextBooking.getBooker().getId()));
+
+        if (!bookingList.isEmpty()) {
+            LocalDateTime nowDate = LocalDateTime.now();
+            Optional<Booking> lastBooking = bookingList.stream()
+                    .filter(booking -> Objects.equals(booking.getItem().getId(), item.getId()))
+                    .filter(booking -> booking.getStart().isBefore(nowDate))
+                    .sorted(Comparator.comparing(Booking::getStart).reversed())
+                    .findFirst();
+
+            Optional<Booking> nextBooking = bookingList.stream()
+                    .filter(booking -> Objects.equals(booking.getItem().getId(), item.getId()))
+                    .filter(booking -> booking.getStart().isAfter(nowDate))
+                    .findFirst();
+
+            if (lastBooking.isPresent()) {
+                Booking last = lastBooking.get();
+                itemInfo.setLastBooking(new BookingDtoForItem(last.getId(),
+                        last.getStart(), last.getEnd(), last.getBooker().getId()));
+            }
+            if (nextBooking.isPresent()) {
+                Booking next = nextBooking.get();
+                itemInfo.setNextBooking(new BookingDtoForItem(next.getId(), next.getStart(),
+                        next.getEnd(), next.getBooker().getId()));
+            }
         }
 
+        itemInfo.setComments(new HashSet<>(commentList));
         return itemInfo;
     }
 }

@@ -15,8 +15,4 @@ public enum BookingStatus {
     public String getMessage() {
         return message;
     }
-
-    public static BookingStatus valueOfIgnoreCase(String name) {
-        return BookingStatus.valueOf(name.toUpperCase());
-    }
 }
