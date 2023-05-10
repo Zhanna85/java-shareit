@@ -75,7 +75,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "Where b.item.id = ?1 " +
             "and (b.start >= ?2 and b.end <= ?3)"
     )
-    List<Booking> getBookingDate(Long Id, LocalDateTime startDate, LocalDateTime endDate);
+    List<Booking> getBookingDate(Long id, LocalDateTime startDate, LocalDateTime endDate);
 
     List<Booking> findByItemOwnerIdAndStatusOrderByStartAsc(Long ownerId, BookingStatus status);
 

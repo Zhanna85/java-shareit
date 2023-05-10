@@ -93,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return itemRepository.search(text).stream()
-                .map(ItemMapper ::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 

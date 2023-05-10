@@ -19,7 +19,9 @@ import javax.persistence.*;
                 @UniqueConstraint(name = "user_email_unique", columnNames = "email")
         }
 )
-@ToString @Getter @Setter
+@ToString
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @DynamicUpdate
 public class User {

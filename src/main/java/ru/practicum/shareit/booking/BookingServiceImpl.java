@@ -132,7 +132,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException(UNKNOWN_STATE.getMessage());
         }
         return bookingList.stream()
-                .map(BookingMapper :: mapToBookingDto)
+                .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
@@ -166,7 +166,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException(UNKNOWN_STATE.getMessage());
         }
         return bookingList.stream()
-                .map(BookingMapper :: mapToBookingDto)
+                .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 }

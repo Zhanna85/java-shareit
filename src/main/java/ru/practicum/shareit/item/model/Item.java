@@ -13,7 +13,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "items")
-@ToString @Getter @Setter
+@ToString
+@Getter
+@Setter
 @EqualsAndHashCode
 @DynamicUpdate
 public class Item {
