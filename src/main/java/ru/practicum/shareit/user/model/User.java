@@ -34,7 +34,6 @@ public class User {
     )
     private Long id; // уникальный идентификатор пользователя;
 
-    @Column(nullable = false)
     private String name; // имя или логин пользователя;
 
     @Column(nullable = false)

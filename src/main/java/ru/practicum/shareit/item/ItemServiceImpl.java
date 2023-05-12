@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -57,8 +58,8 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemInfo> getAllItemsByIdUser(long userId) {
         validUser(userId);
         List<Item> itemList = itemRepository.findByOwnerId(userId);
-        List<Booking> bookingList = bookingRepository.findByItemOwnerIdAndStatusOrderByStartAsc(userId,
-                BookingStatus.APPROVED);
+        List<Booking> bookingList = bookingRepository.findByItemOwnerIdAndStatus(userId,
+                BookingStatus.APPROVED, Sort.by(Sort.Direction.ASC, "start"));
 
         return itemList.stream()
                 .map(item -> ItemMapper.toGetItemWithBooking(item, bookingList, new ArrayList<>()))
@@ -67,14 +68,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemInfo getItem(long userId, long itemId) {
-        validUser(userId);
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
         List<Booking> bookingList = new ArrayList<>();
 
         if (item.getOwner().getId() == userId) {
-            bookingList = bookingRepository.findByItemIdAndStatusOrderByStartAsc(itemId,
-                    BookingStatus.APPROVED);
+            bookingList = bookingRepository.findByItemIdAndStatus(itemId,
+                    BookingStatus.APPROVED, Sort.by(Sort.Direction.ASC, "start"));
 
         }
 

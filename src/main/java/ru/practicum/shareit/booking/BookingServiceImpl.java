@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -21,8 +22,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingState.valueOfIgnoreCase;
-import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
-import static ru.practicum.shareit.booking.BookingStatus.REJECTED;
+import static ru.practicum.shareit.booking.BookingStatus.*;
 import static ru.practicum.shareit.utils.Message.*;
 
 @Service
@@ -108,25 +108,26 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList;
         LocalDateTime currentMoment = LocalDateTime.now();
         BookingState status = valueOfIgnoreCase(state);
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
         switch (status) {
             case ALL:
-                bookingList = bookingRepository.findByBookerIdOrderByStartDesc(userId);
+                bookingList = bookingRepository.findByBookerId(userId, sort);
                 break;
             case PAST:
-                bookingList = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(userId, currentMoment);
+                bookingList = bookingRepository.findByBookerIdAndEndBefore(userId, currentMoment, sort);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
+                bookingList = bookingRepository.findByBookerIdAndStartAfter(userId, currentMoment, sort);
                 break;
             case CURRENT:
                 bookingList = bookingRepository.findByBookerIdAndCurrentMomentBetweenStartAndEnd(userId, currentMoment);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                bookingList = bookingRepository.findByBookerIdAndStatus(userId, WAITING, sort);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findByBookerIdAndStatusRejected(userId);
+                bookingList = bookingRepository.findByBookerIdAndStatus(userId, REJECTED, sort);
                 break;
             default:
                 throw new ValidationException(UNKNOWN_STATE.getMessage());
@@ -142,25 +143,26 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList;
         LocalDateTime currentMoment = LocalDateTime.now();
         BookingState status = valueOfIgnoreCase(state);
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
         switch (status) {
             case ALL:
-                bookingList = bookingRepository.findByItemOwnerIdOrderByStartDesc(userId);
+                bookingList = bookingRepository.findByItemOwnerId(userId, sort);
                 break;
             case PAST:
-                bookingList = bookingRepository.findByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, currentMoment);
+                bookingList = bookingRepository.findByItemOwnerIdAndEndBefore(userId, currentMoment, sort);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findByItemOwnerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
+                bookingList = bookingRepository.findByItemOwnerIdAndStartAfter(userId, currentMoment, sort);
                 break;
             case CURRENT:
                 bookingList = bookingRepository.findByItemOwnerIdAndCurrentMomentBetweenStartAndEnd(userId, currentMoment);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                bookingList = bookingRepository.findByItemOwnerIdAndStatus(userId, WAITING, sort);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findByItemOwnerIdAndStatusRejected(userId);
+                bookingList = bookingRepository.findByItemOwnerIdAndStatus(userId, REJECTED, sort);
                 break;
             default:
                 throw new ValidationException(UNKNOWN_STATE.getMessage());

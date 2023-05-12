@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,15 +16,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("Select distinct b " +
             "From Booking AS b " +
             "join b.item AS i " +
-            "Where b.id = ?1" +
-            " and (b.booker.id = ?2 or i.owner.id = ?2)")
+            "Where b.id = ?1 " +
+            "and (b.booker.id = ?2 or i.owner.id = ?2)")
     Optional<Booking> findByIdAndBookerIdOrItemOwnerId(Long id, Long bookerId);
-
-    List<Booking> findByBookerIdOrderByStartDesc(Long bookerId);
-
-    List<Booking> findByBookerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime currentMoment);
-
-    List<Booking> findByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime currentMoment);
 
     @Query("Select b " +
             "From Booking AS b " +
@@ -32,21 +27,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and b.end > ?2 " +
             "ORDER BY b.start ASC")
     List<Booking> findByBookerIdAndCurrentMomentBetweenStartAndEnd(Long bookerId, LocalDateTime currentMoment);
-
-    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
-
-    @Query("Select b " +
-            "From Booking AS b " +
-            "Where b.booker.id = ?1 " +
-            "and b.status in ('REJECTED', 'CANCELED') " +
-            "ORDER BY b.start DESC")
-    List<Booking> findByBookerIdAndStatusRejected(Long bookerId);
-
-    List<Booking> findByItemOwnerIdOrderByStartDesc(Long ownerId);
-
-    List<Booking> findByItemOwnerIdAndEndBeforeOrderByStartDesc(Long ownerId, LocalDateTime currentMoment);
-
-    List<Booking> findByItemOwnerIdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime currentMoment);
 
     @Query("Select b " +
             "From Booking AS b " +
@@ -57,27 +37,30 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "ORDER BY b.start DESC")
     List<Booking> findByItemOwnerIdAndCurrentMomentBetweenStartAndEnd(Long ownerId, LocalDateTime currentMoment);
 
-    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
-
-    @Query("Select b " +
-            "From Booking AS b " +
-            "join b.item AS i " +
-            "Where i.owner.id = ?1 " +
-            "and b.status in ('REJECTED', 'CANCELED') " +
-            "ORDER BY b.start DESC")
-    List<Booking> findByItemOwnerIdAndStatusRejected(Long ownerId);
-
     List<Booking> findByItemIdAndBookerIdAndStatusAndEndBefore(Long id, Long bookerId, BookingStatus status,
                                                                  LocalDateTime createdDate);
 
     @Query("Select b " +
             "From Booking AS b " +
             "Where b.item.id = ?1 " +
-            "and (b.start >= ?2 and b.end <= ?3)"
-    )
+            "and (b.start >= ?2 and b.end <= ?3)")
     List<Booking> getBookingDate(Long id, LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Booking> findByItemOwnerIdAndStatusOrderByStartAsc(Long ownerId, BookingStatus status);
+    List<Booking> findByBookerId(Long userId, Sort sort);
 
-    List<Booking> findByItemIdAndStatusOrderByStartAsc(Long itemId, BookingStatus status);
+    List<Booking> findByBookerIdAndEndBefore(Long userId, LocalDateTime currentMoment, Sort sort);
+
+    List<Booking> findByBookerIdAndStartAfter(Long userId, LocalDateTime currentMoment, Sort sort);
+
+    List<Booking> findByBookerIdAndStatus(Long userId, BookingStatus status, Sort sort);
+
+    List<Booking> findByItemOwnerId(Long userId, Sort sort);
+
+    List<Booking> findByItemOwnerIdAndEndBefore(Long userId, LocalDateTime currentMoment, Sort sort);
+
+    List<Booking> findByItemOwnerIdAndStartAfter(Long userId, LocalDateTime currentMoment, Sort sort);
+
+    List<Booking> findByItemOwnerIdAndStatus(Long userId, BookingStatus status, Sort sort);
+
+    List<Booking> findByItemIdAndStatus(Long itemId, BookingStatus status, Sort sort);
 }
