@@ -26,12 +26,12 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item; // вещь, к которой относится комментарий;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "author_id", nullable = false, updatable = false)
+    @JoinColumn(name = "author_id", updatable = false)
     private User author; // автор комментария;
 
     @Column(name = "created_date", nullable = false, updatable = false)

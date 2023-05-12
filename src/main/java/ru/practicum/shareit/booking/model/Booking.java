@@ -36,12 +36,12 @@ public class Booking {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     private Item item; // вещь, которую пользователь бронирует;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "booker_id", nullable = false)
+    @JoinColumn(name = "booker_id")
     private User booker; // пользователь, который осуществляет бронирование;
 
     @Enumerated(EnumType.STRING)

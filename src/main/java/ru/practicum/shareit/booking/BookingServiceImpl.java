@@ -85,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
         if (approved && booking.getStatus() == APPROVED) {
             throw new ValidationException(BEEN_APPROVED.getMessage());
         }
-        if (approved && booking.getStatus() != APPROVED) {
+        if (approved) {
             booking.setStatus(APPROVED);
         }
         if (!approved && booking.getStatus() != REJECTED) {

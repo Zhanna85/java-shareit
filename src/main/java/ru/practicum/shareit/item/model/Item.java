@@ -42,7 +42,7 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id")
     private User owner; // владелец вещи;
 
     @ManyToOne(fetch = FetchType.LAZY)
