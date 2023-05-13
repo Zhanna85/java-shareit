@@ -7,8 +7,7 @@ import ru.practicum.shareit.booking.model.Booking;
 
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdAndItemOwnerId(Long id, Long ownerId);
@@ -63,4 +62,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemOwnerIdAndStatus(Long userId, BookingStatus status, Sort sort);
 
     List<Booking> findByItemIdAndStatus(Long itemId, BookingStatus status, Sort sort);
+
+    List<Booking> findByItemIdIn(Set<Long> itemId, Sort sort);
 }

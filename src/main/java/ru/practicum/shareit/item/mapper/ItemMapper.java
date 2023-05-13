@@ -7,11 +7,14 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemInfo;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
@@ -35,7 +38,7 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static ItemInfo toGetItemWithBooking(Item item, List<Booking> bookingList, List<CommentDtoResponse> commentList) {
+    public static ItemInfo toGetItemWithBooking(Item item, List<Booking> bookingList, List<Comment> commentList) {
         ItemInfo itemInfo = new ItemInfo();
         itemInfo.setId(item.getId());
         itemInfo.setName(item.getName());
@@ -67,7 +70,9 @@ public class ItemMapper {
             }
         }
 
-        itemInfo.setComments(new HashSet<>(commentList));
+        List<CommentDtoResponse> commentDtoResponses = commentList.stream().map(CommentMapper::mapToCommentDtoResponse)
+                .collect(toList());
+        itemInfo.setComments(new HashSet<>(commentDtoResponses));
         return itemInfo;
     }
 }

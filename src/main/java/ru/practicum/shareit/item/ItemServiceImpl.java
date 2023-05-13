@@ -14,19 +14,17 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemInfo;
-import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static ru.practicum.shareit.item.mapper.CommentMapper.mapToCommentDtoResponse;
 import static ru.practicum.shareit.item.mapper.CommentMapper.mapToNewComment;
 import static ru.practicum.shareit.item.mapper.ItemMapper.*;
@@ -56,13 +54,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemInfo> getAllItemsByIdUser(long userId) {
-        validUser(userId);
-        List<Item> itemList = itemRepository.findByOwnerId(userId);
-        List<Booking> bookingList = bookingRepository.findByItemOwnerIdAndStatus(userId,
-                BookingStatus.APPROVED, Sort.by(Sort.Direction.ASC, "start"));
-
-        return itemList.stream()
-                .map(item -> ItemMapper.toGetItemWithBooking(item, bookingList, new ArrayList<>()))
+        Map<Long, Item> itemMap = itemRepository.findByOwnerId(userId)
+                .stream()
+                .collect(Collectors.toMap(Item::getId, Function.identity()));
+        Map<Long, List<Booking>> bookingMap = bookingRepository.findByItemIdIn(itemMap.keySet(),
+                        Sort.by(Sort.Direction.ASC, "start"))
+                .stream()
+                .collect(Collectors.groupingBy(b -> b.getItem().getId()));
+        Map<Long, List<Comment>> comments = commentRepository.findByItemIdIn(itemMap.keySet(),
+                Sort.by(Sort.Direction.ASC, "created")).stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
+        return itemMap.values()
+                .stream()
+                .map(item -> toGetItemWithBooking(
+                        item,
+                        bookingMap.getOrDefault(item.getId(), Collections.emptyList()),
+                        comments.getOrDefault(item.getId(), Collections.emptyList())
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -78,9 +86,7 @@ public class ItemServiceImpl implements ItemService {
 
         }
 
-        List<CommentDtoResponse> comments = commentRepository.findByItemIdOrderByCreatedAsc(itemId).stream()
-                .map(CommentMapper::mapToCommentDtoResponse)
-                .collect(Collectors.toList());
+        List<Comment> comments = commentRepository.findByItemIdOrderByCreatedAsc(itemId);
 
         return toGetItemWithBooking(item, bookingList, comments);
     }
@@ -94,7 +100,7 @@ public class ItemServiceImpl implements ItemService {
 
         return itemRepository.search(text).stream()
                 .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Transactional
