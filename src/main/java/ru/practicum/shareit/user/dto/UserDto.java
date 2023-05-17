@@ -12,8 +12,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserDto {
 
-    private long id;
-    @NotBlank
+    private Long id;
     private String name; // имя или логин пользователя;
     @NotBlank @Email @EqualsAndHashCode.Include
     private String email; // адрес электронной почты (два пользователя не могут иметь одинаковый адрес электронной почты).

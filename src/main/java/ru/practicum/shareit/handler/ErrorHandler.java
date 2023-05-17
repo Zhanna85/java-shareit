@@ -32,7 +32,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleValidationExceptionOnDuplicate(final ValidationExceptionOnDuplicate exception) {
-        log.error("Код ошибки: {}, {}", HttpStatus.NOT_FOUND, exception.getMessage());
+        log.error("Код ошибки: {}, {}", HttpStatus.CONFLICT, exception.getMessage());
         return Map.of("error", exception.getMessage());
     }
 }
