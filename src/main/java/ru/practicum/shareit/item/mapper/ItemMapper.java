@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemInfo;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -19,12 +20,13 @@ import static java.util.stream.Collectors.toList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
 
-    public static Item toNewItem(User user, ItemDto itemDto) {
+    public static Item toNewItem(User user, ItemDto itemDto, ItemRequest request) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(user);
+        item.setRequest(request);
 
         return item;
     }
@@ -35,6 +37,9 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 

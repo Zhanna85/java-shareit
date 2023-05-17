@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.dto.ItemInfo;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -39,6 +41,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
     private User validUser(Long id) {
         return userRepository.findById(id).stream().findAny()
@@ -108,7 +111,13 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(long userId, ItemDto itemDto) {
         User user = validUser(userId);
         dataValidator(itemDto.getName());
-        Item item = itemRepository.save(toNewItem(user, itemDto));
+        Long requestId = itemDto.getRequestId();
+        ItemRequest request = null;
+        if (requestId != null) {
+            request = requestRepository.findById(requestId)
+                    .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + requestId));
+        }
+        Item item = itemRepository.save(toNewItem(user, itemDto, request));
         log.info(ADD_MODEL.getMessage(), item);
         return toItemDto(item);
     }
