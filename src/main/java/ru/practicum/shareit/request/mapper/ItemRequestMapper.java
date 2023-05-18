@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.mapper;
 
 import lombok.experimental.UtilityClass;
-import org.w3c.dom.stylesheets.LinkStyle;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;

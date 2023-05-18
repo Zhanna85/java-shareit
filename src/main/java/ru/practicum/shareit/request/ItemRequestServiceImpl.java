@@ -2,6 +2,7 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -46,7 +47,8 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     @Override
     public Collection<ItemRequestInfo> getAllRequestItemByRequesterId(Long userId) {
         validUser(userId);
-        Map<Long, ItemRequest> requestMap = requestRepository.findByRequesterId(userId).stream()
+        Map<Long, ItemRequest> requestMap = requestRepository.findByRequesterId(userId,
+                        Sort.by("created").descending()).stream()
                 .collect(Collectors.toMap(ItemRequest::getId, Function.identity()));
         Map<Long, List<Item>> itemByRequest = itemRepository.findByRequestIdIn(requestMap.keySet()).stream()
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
@@ -61,7 +63,8 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     @Override
     public Collection<ItemRequestInfo> getAllRequestItemByUserId(Long userId, Integer from, Integer size) {
         validUser(userId);
-        Map<Long, ItemRequest> requestMap = requestRepository.findAll().stream()
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("created").descending());
+        Map<Long, ItemRequest> requestMap = requestRepository.findByRequesterIdNot(userId, page).stream()
                 .collect(Collectors.toMap(ItemRequest::getId, Function.identity()));
         Map<Long, List<Item>> itemByRequest = itemRepository.findByRequestIdIn(requestMap.keySet()).stream()
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
