@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -25,6 +26,7 @@ import static ru.practicum.shareit.utils.Message.MODEL_NOT_FOUND;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemRequestServiceImpl implements ItemRequestService{
 
     private final ItemRequestRepository requestRepository;
@@ -37,6 +39,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     }
 
     @Override
+    @Transactional
     public ItemRequestDto addNewRequestItem(Long userId, ItemRequestDto requestDto) {
         User user = validUser(userId);
         ItemRequest request = requestRepository.save(mapToNewItemRequest(user, requestDto));
