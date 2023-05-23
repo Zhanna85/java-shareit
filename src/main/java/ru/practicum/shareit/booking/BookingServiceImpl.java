@@ -64,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto addNewBooking(Long userId, BookingDtoRequest bookingDtoRequest) {
         User user = validUserById(userId);
+        validStartEndEndDate(bookingDtoRequest);
         Item item = validItemById(bookingDtoRequest.getItemId());
         if (Objects.equals(item.getOwner().getId(), userId)) {
             throw new NotFoundException(IS_OWNER_ITEM.getMessage());
@@ -71,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new ValidationException(NOT_AVAILABLE.getMessage());
         }
-        validStartEndEndDate(bookingDtoRequest);
+
         Booking booking = bookingRepository.save(BookingMapper.mapToBooking(user, item, bookingDtoRequest));
         log.info(ADD_MODEL.getMessage(), booking);
         return BookingMapper.mapToBookingDto(booking);
@@ -141,7 +142,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingByItemUser(Long userId, String state, Integer from, Integer size) {
+    public List<BookingDto> getAllBookingByOwnerItem(Long userId, String state, Integer from, Integer size) {
         validUserById(userId);
         List<Booking> bookingList;
         LocalDateTime currentMoment = LocalDateTime.now();

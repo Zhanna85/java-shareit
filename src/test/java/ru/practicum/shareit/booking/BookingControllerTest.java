@@ -142,7 +142,7 @@ class BookingControllerTest {
         var from = 0;
         var size = 10;
 
-        when(bookingService.getAllBookingByItemUser(userId, state, from, size))
+        when(bookingService.getAllBookingByOwnerItem(userId, state, from, size))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(get("/bookings/owner")
@@ -169,7 +169,7 @@ class BookingControllerTest {
         var from = 0;
         var size = 10;
 
-        when(bookingService.getAllBookingByItemUser(userId, state, from, size))
+        when(bookingService.getAllBookingByOwnerItem(userId, state, from, size))
                 .thenThrow(new ValidationException(UNKNOWN_STATE.getMessage()));
 
         mvc.perform(get("/bookings/owner")

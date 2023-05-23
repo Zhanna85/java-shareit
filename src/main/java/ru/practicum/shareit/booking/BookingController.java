@@ -67,6 +67,6 @@ public class BookingController {
                                                                @RequestParam(value = "size",
                                                                        defaultValue = "10") @Positive Integer size) {
         log.info(REQUEST_ALL.getMessage());
-        return bookingService.getAllBookingByItemUser(userId, state, from, size);
+        return bookingService.getAllBookingByOwnerItem(userId, state, from, size);
     }
 }

@@ -49,13 +49,6 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + id));
     }
 
-    private void dataValidator(String name) {
-        if (name.isEmpty()) {
-            log.error(NAME_MAY_NOT_CONTAIN_SPACES.getMessage());
-            throw new ValidationException(NAME_MAY_NOT_CONTAIN_SPACES.getMessage());
-        }
-    }
-
     @Override
     public Collection<ItemInfo> getAllItemsByIdUser(long userId, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
@@ -113,7 +106,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
         User user = validUser(userId);
-        dataValidator(itemDto.getName());
         Long requestId = itemDto.getRequestId();
         ItemRequest request = null;
         if (requestId != null) {
@@ -128,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto update(long userId, long itemId, ItemDto itemDto) {
-        User user = validUser(userId);
+        validUser(userId);
         Item item = itemRepository.findByIdAndOwnerId(itemId, userId)
                 .orElseThrow(() -> new NotFoundException(MODEL_NOT_FOUND.getMessage() + itemId));
         String name = itemDto.getName();
@@ -139,7 +131,6 @@ public class ItemServiceImpl implements ItemService {
             item.setDescription(description);
         }
         if (name != null) {
-            dataValidator(name);
             item.setName(name);
         }
         if (available != null) {

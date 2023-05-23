@@ -13,6 +13,6 @@ public class CommentDtoResponse {
     private long id; // уникальный идентификатор комментария;
     private String text; // содержимое комментария;
     private String authorName; // автор комментария;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSS")
     private LocalDateTime created; // дата создания комментария.
 }
