@@ -40,6 +40,7 @@ class UserServiceImplIntegrationTest {
         assertThat(result.getName(), equalTo(userDto.getName()));
         assertThat(result.getEmail(), equalTo(userDto.getEmail()));
     }
+
     @Test
     void updateModel() {
         long userId = userService.addModel(userDto).getId();
@@ -57,7 +58,7 @@ class UserServiceImplIntegrationTest {
         long userId = userService.addModel(userDto).getId();
         UserDto userUp = new UserDto(userId, "userUp", "userUp@user.com");
 
-        assertThrows(NotFoundException.class, () -> userService.updateModel(2L, userUp)) ;
+        assertThrows(NotFoundException.class, () -> userService.updateModel(2L, userUp));
     }
 
     @Test

@@ -27,7 +27,7 @@ import static ru.practicum.shareit.utils.Message.MODEL_NOT_FOUND;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestRepository requestRepository;
     private final UserRepository userRepository;

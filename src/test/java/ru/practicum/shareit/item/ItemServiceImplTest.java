@@ -33,9 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static ru.practicum.shareit.item.mapper.ItemMapper.toItemDto;
 import static ru.practicum.shareit.item.mapper.ItemMapper.toNewItem;
-import static ru.practicum.shareit.user.mapper.UserMapper.toUser;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
@@ -167,13 +165,14 @@ class ItemServiceImplTest {
         verify(commentRepository, times(1)).findByItemIdOrderByCreatedAsc(item.getId());
         verify(itemRepository, times(1)).findById(item.getId());
     }
+
     @Test
     void getItemByIdWhenItemNotFoundThenThrowException() {
-        long itemId = 3L;
+        long id = 0L;
         when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> itemService.getItem(user.getId(), itemId));
-        verify(commentRepository, never()).findByItemIdOrderByCreatedAsc(itemId);
+        assertThrows(NotFoundException.class, () -> itemService.getItem(user.getId(), id));
+        verify(commentRepository, never()).findByItemIdOrderByCreatedAsc(id);
         verify(itemRepository, times(1)).findById(anyLong());
     }
 

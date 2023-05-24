@@ -160,7 +160,7 @@ class BookingServiceImplTest {
         booking.setStatus(APPROVED);
         when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong())).thenReturn(Optional.of(booking));
         Boolean approved = true;
-        assertThrows(ValidationException.class, () ->service.updateBooking(user.getId(), booking.getId(), approved)) ;
+        assertThrows(ValidationException.class, () -> service.updateBooking(user.getId(), booking.getId(), approved));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -186,7 +186,7 @@ class BookingServiceImplTest {
         long userId = 3L;
         when(bookingRepository.findByIdAndBookerIdOrItemOwnerId(anyLong(), anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () ->service.getBookingByID(userId, booking.getId()));
+        assertThrows(NotFoundException.class, () -> service.getBookingByID(userId, booking.getId()));
     }
 
     @Test

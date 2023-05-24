@@ -38,7 +38,7 @@ class ItemControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSS");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSS");
     private final Long userId = 1L;
     private final ItemDto itemDto = new ItemDto(
             1L,

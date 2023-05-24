@@ -38,7 +38,7 @@ class ItemRequestControllerTest {
     private MockMvc mvc;
 
     private final Long userId = 1L;
-    private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private final LocalDateTime created = LocalDateTime.now();
     private final ItemRequestDto requestDto = new ItemRequestDto(
             1L,

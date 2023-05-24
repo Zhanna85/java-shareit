@@ -37,7 +37,7 @@ class BookingControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private Long userId = 2L;
     private BookingDtoRequest request = new BookingDtoRequest(
             1L,

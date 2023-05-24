@@ -69,6 +69,7 @@ class ItemRepositoryTest {
 
         assertTrue(items.isEmpty());
     }
+
     @AfterEach
     void deleteAll() {
         repository.deleteAll();
