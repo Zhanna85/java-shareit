@@ -109,6 +109,7 @@ class ItemRepositoryTest {
 
         assertTrue(items.isEmpty());
     }
+
     @Test
     void findByOwnerIdWhenItemFoundThenReturnedItemList() {
         List<Item> items = repository.findByOwnerId(userResult.getId(), page).getContent();

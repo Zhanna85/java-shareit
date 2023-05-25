@@ -1,7 +1,5 @@
 package ru.practicum.shareit.request.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @UtilityClass
-/*@NoArgsConstructor(access = AccessLevel.PRIVATE)*/
 public class ItemRequestMapper {
 
     public static ItemRequest mapToNewItemRequest(User user, ItemRequestDto requestDto) {
