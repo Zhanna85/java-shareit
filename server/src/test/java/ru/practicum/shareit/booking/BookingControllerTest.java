@@ -41,8 +41,8 @@ class BookingControllerTest {
     private Long userId = 2L;
     private BookingDtoRequest request = new BookingDtoRequest(
             1L,
-            LocalDateTime.now().plusDays(1),
-            LocalDateTime.now().plusDays(2)
+            LocalDateTime.of(2023, 5, 22, 1, 34, 1),
+            LocalDateTime.of(2023, 5, 23, 1, 34, 1)
     );
     private BookingDto bookingDto = new BookingDto(
             1L,

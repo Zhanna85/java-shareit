@@ -39,7 +39,7 @@ class ItemRequestControllerTest {
 
     private final Long userId = 1L;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    private final LocalDateTime created = LocalDateTime.now();
+    private final LocalDateTime created = LocalDateTime.of(2023, 5, 23, 0, 0, 50);
     private final ItemRequestDto requestDto = new ItemRequestDto(
             1L,
             "Хотел бы воспользоваться щёткой для обуви",
@@ -59,7 +59,7 @@ class ItemRequestControllerTest {
     private final ItemRequestInfo requestInfo = new ItemRequestInfo(
             1L,
             "Хотел бы воспользоваться щёткой для обуви",
-            LocalDateTime.now(),
+            LocalDateTime.of(2023, 5, 23, 0, 0, 50),
             itemDtoSet
     );
 

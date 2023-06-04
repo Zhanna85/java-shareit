@@ -14,7 +14,6 @@ import ru.practicum.shareit.item.dto.ItemInfo;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +37,6 @@ class ItemControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSS");
     private final Long userId = 1L;
     private final ItemDto itemDto = new ItemDto(
             1L,
@@ -174,7 +172,7 @@ class ItemControllerTest {
                 1L,
                 "Comment for item 1",
                 "user",
-                LocalDateTime.now()
+                LocalDateTime.of(2023, 5, 23, 0, 0, 50)
         );
 
         when(itemService.saveComment(anyLong(),anyLong(), any())).thenReturn(comment);
@@ -189,6 +187,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.id", is(comment.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(comment.getText())))
                 .andExpect(jsonPath("$.authorName", is(comment.getAuthorName())))
-                .andExpect(jsonPath("$.created", is(comment.getCreated().format(TIME_FORMATTER))));
+                .andExpect(jsonPath("$.created", is(comment.getCreated().toString())));
     }
 }

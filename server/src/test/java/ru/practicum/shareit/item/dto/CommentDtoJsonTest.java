@@ -29,6 +29,6 @@ class CommentDtoJsonTest {
         JsonContent<CommentDtoResponse> result = json.write(commentDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathValue("$.created").isEqualTo("2023-05-22T01:34:01.0000");
+        assertThat(result).extractingJsonPathValue("$.created").isEqualTo("2023-05-22T01:34:01");
     }
 }
